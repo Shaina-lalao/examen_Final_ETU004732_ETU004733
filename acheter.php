@@ -1,25 +1,16 @@
 <?php
-include_once ( "../inc/functions.php" );
+include_once('../inc/functions.php');
 
+$id = isset($_POST['id']) ? $_POST['id'] : 0;
+$quantite = isset($_POST['quantite']) ? $_POST['quantite'] : 0;
 
-$id=$_POST['id'];
-$quantite=$_POST['quantite'];
+$succes = acheterProduit($id, $quantite);
 
-
-$result=acheterProduit($id,$quantite);
-
-
-if($result){
-
-echo "Achat réussi";
-
-}else{
-
-echo "Erreur : stock insuffisant";
-
+if ($succes) {
+    echo "Achat réussi !";
+} else {
+    echo "Erreur : stock insuffisant ou quantité invalide.";
 }
 
-
-echo "<br><a href='index.php'>Retour</a>";
-
+echo '<br><a href="accueil.php">Retour</a>';
 ?>
