@@ -84,52 +84,72 @@ function getProduitsDisponibles(){
         pm.quantite_dispo,
         pm.date_dispo
     FROM produit_membre pm
-
     JOIN produit p 
     ON pm.id_produit = p.id_produit
-
     JOIN categorie c
     ON p.id_categorie = c.id_categorie
-
     JOIN membre m
     ON pm.id_membre = m.id_membre
-
     WHERE pm.quantite_dispo > 0
     ";
 
     return mysqli_query(dbconnect(),$sql);
 }
 
+function acheterProduit($id, $quantite) {
 
-
-function acheterProduit($id,$quantite){
-
-    $sql = "SELECT quantite_dispo
-    FROM produit_membre
-    WHERE id_produit_membre=$id
-    ";
-
-    $result= execute_query($sql);
-    mysqli_fetch_assoc( $result);
-
-    if($quantite <=0){
+    if ($quantite <= 0) {
         return false;
     }
 
-    if($quantite > $produit['quantite_dispo']){
+    $sql = "SELECT quantite_dispo FROM produit_membre WHERE id_produit_membre = $id";
+    $result = execute_query($sql);
+    $produit = mysqli_fetch_assoc($result);
+
+    if (!$produit || $quantite > $produit['quantite_dispo']) {
         return false;
     }
 
-    $date=date("Y-m-d");
-    $heure=date("H:i:s");
+    $date = date('Y-m-d');
+    $heure = date('H:i:s');
 
 
-    mysqli_query("INSERT INTO vente (date,heure,id_produit_membre,quantite) VALUES ('$date','$heure','$id','$quantite')");
-
-    mysqli_query("UPDATE produit_membre SET quantite_dispo = quantite_dispo-$quantite WHERE id_produit_membre=$id");
-
+    mysqli_query(dbconnect(), "INSERT INTO vente (date, heure, id_produit_membre, quantite) VALUES ('$date', '$heure', $id, $quantite)");
+    mysqli_query(dbconnect(), "UPDATE produit_membre SET quantite_dispo = quantite_dispo - $quantite WHERE id_produit_membre = $id");
 
     return true;
-
 }
+
+
+// function acheterProduit ( $id , $quantite ){
+//     $sql = "SELECT * FROM produit_membre where id_produit_membre = '$id'";
+    
+//     // if ( $quantite <= 0 ){
+//     //     return false ;
+//     // }
+//     // if ( $quantite > $sql["quantite_dispo"] ){
+//     //     return false ;
+//     // } 
+//     // if ( $quantite <= $sql["quantite_dispo"] ){
+//     //     return true ;
+//     // }
+//     execute_query ( $sql );
+
+// }
+
+// function ajouterVente ( $id , $quantite ){
+//     $date=date("Y-m-d");
+//     $heure=date("H:i:s");
+//     $sql = "INSERT INTO vente (date,heure,id_produit_membre,quantite) VALUES ('$date','$heure','$id','$quantite')";
+
+//     execute_query ( $sql );
+// }
+
+// function changerProduitMembre ( $id , $quantite ){
+//     $sql = "UPDATE produit_membre SET quantite_dispo = quantite_dispo-$quantite WHERE id_produit_membre=$id" ;
+
+//     execute_query ( $sql );
+// }
+
+
 ?>
